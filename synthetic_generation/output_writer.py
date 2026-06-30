@@ -46,6 +46,7 @@ def _row_from_user(user: GeneratedUser, config: GenerationConfig) -> dict:
         "top_p": float(config.top_p),
         "alpha": float(config.alpha),
         "gamma": float(config.gamma),
+        "grammar_mode": config.grammar_mode,
         "seed": int(config.seed),
         "classification_loss_mask": 0,
         "ntp_loss_mask": 1,

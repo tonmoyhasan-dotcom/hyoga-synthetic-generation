@@ -41,6 +41,15 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--bos-token-id", type=int, default=None)
     parser.add_argument("--eos-token-id", type=int, default=None)
     parser.add_argument("--sep-token-id", type=int, default=None)
+    parser.add_argument(
+        "--grammar-mode",
+        choices=["basic", "none"],
+        default="basic",
+        help=(
+            "Token constraint mode. 'basic' blocks pad/BOS/label tokens and uses SEP/EOS safety; "
+            "'none' disables token masking while still counting SEP tokens as transaction boundaries."
+        ),
+    )
     parser.add_argument("--allow-label-tokens", action="store_true")
     parser.add_argument("--shard-size", type=int, default=1000)
     parser.add_argument("--index-litdata", action="store_true")
@@ -77,6 +86,7 @@ def _build_config(args: argparse.Namespace) -> GenerationConfig:
         bos_token_id=args.bos_token_id,
         eos_token_id=args.eos_token_id,
         sep_token_id=args.sep_token_id,
+        grammar_mode=args.grammar_mode,
         disallow_label_tokens=not args.allow_label_tokens,
         shard_size=args.shard_size,
         index_litdata=args.index_litdata,
@@ -131,9 +141,11 @@ def main(argv: list[str] | None = None) -> int:
         eos_token_id=config.eos_token_id,
         sep_token_id=config.sep_token_id,
         disallow_label_tokens=config.disallow_label_tokens,
+        constrain_tokens=(config.grammar_mode == "basic"),
     )
     logger.info(
-        "Grammar: vocab=%d bos=%s sep=%s eos=%s disallowed=%d",
+        "Grammar: mode=%s vocab=%d bos=%s sep=%s eos=%s disallowed=%d",
+        config.grammar_mode,
         grammar.vocab_size,
         grammar.bos_token_id,
         grammar.sep_token_id,

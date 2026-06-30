@@ -29,6 +29,7 @@ class GenerationConfig:
     bos_token_id: int | None = None
     eos_token_id: int | None = None
     sep_token_id: int | None = None
+    grammar_mode: str = "basic"
     disallow_label_tokens: bool = True
     shard_size: int = 1000
     index_litdata: bool = False
@@ -68,6 +69,8 @@ class GenerationConfig:
             raise ValueError("--alpha must be in (0, 1]")
         if self.gamma < 0:
             raise ValueError("--gamma must be >= 0")
+        if self.grammar_mode not in {"basic", "none"}:
+            raise ValueError(f"--grammar-mode must be 'basic' or 'none', got {self.grammar_mode!r}")
         if self.shard_size < 1:
             raise ValueError("--shard-size must be >= 1")
 
